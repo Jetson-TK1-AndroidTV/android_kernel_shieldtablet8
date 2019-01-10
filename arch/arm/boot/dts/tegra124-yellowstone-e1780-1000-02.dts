@@ -1,0 +1,229 @@
+/dts-v1/;
+
+#include "tegra124.dtsi"
+#include "tegra124-platforms/tegra124-yellowstone-gpio-e1780-1000-02.dtsi"
+#include "tegra124-platforms/tegra124-yellowstone-pinmux-e1780-1000-02.dtsi"
+#include "tegra124-platforms/tegra124-yellowstone-keys-e1780-1000-02.dtsi"
+#include "tegra124-platforms/tegra124-yellowstone-pmic-e1780-1000-02.dtsi"
+#include "tegra124-platforms/tegra124-yellowstone-fixed-e1780-1000-02.dtsi"
+
+/ {
+	model = "NVIDIA Tegra124 Yellowstone";
+	compatible = "google,yellowstone", "nvidia,tegra124";
+	nvidia,dtsfilename = __FILE__;
+	#address-cells = <2>;
+	#size-cells = <2>;
+
+	chosen {
+		bootargs = "tegraid=40.0.0.00.00 vmalloc=256M video=tegrafb console=ttyS0,115200n8 earlyprintk";
+		linux,initrd-start = <0x85000000>;
+		linux,initrd-end = <0x851bc400>;
+	};	
+
+	memory@0x80000000 {
+		device_type = "memory";
+		reg = <0x0 0x80000000 0x0 0x80000000>;
+	};
+
+	serial@70006000 {
+		compatible = "nvidia,tegra114-hsuart";
+		status = "okay";
+	};
+
+	serial@70006040 {
+		compatible = "nvidia,tegra114-hsuart";
+		status = "okay";
+	};
+
+	serial@70006200 {
+		compatible = "nvidia,tegra114-hsuart";
+		status = "okay";
+	};
+
+	i2c@7000c000 {
+		status = "okay";
+		clock-frequency = <400000>;
+	};
+
+	i2c@7000c400 {
+		status = "okay";
+		clock-frequency = <100000>;
+
+		ina3221x@40 {
+			compatible = "ti,ina3221x";
+			reg = <0x40>;
+			ti,trigger-config = <0x7203>;
+			ti,continuous-config = <0x7c07>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			#io-channel-cells = <1>;
+
+			channel@0 {
+				reg = <0x0>;
+				ti,rail-name = "VDD_BAT";
+				ti,shunt-resistor-mohm = <10>;
+			};
+
+			channel@1 {
+				reg = <0x1>;
+				ti,rail-name = "VDD_SYS_GPU_IN";
+				ti,shunt-resistor-mohm = <10>;
+			};
+
+			channel@2 {
+				reg = <0x2>;
+				ti,rail-name = "VDD_SYS_SOC_IN";
+				ti,shunt-resistor-mohm = <10>;
+			};
+		};
+
+		iqs253@44 {
+			compatible = "azoteq,iqs253";
+			reg = <0x44>;
+			vendor = "Azoteq";
+			proximity,max-range = "2";
+			proximity,integration-time = "16000000";
+			proximity,power-consumed = "1.67";
+			/* rdy-gpio = <0x7 0xf8 0x1>; */
+			rdy-gpio = <&gpio TEGRA_GPIO(FF, 0) GPIO_ACTIVE_LOW>;
+			/* sar-gpio = <0x7 0x42 0x1>; */
+			sar-gpio = <&gpio TEGRA_GPIO(I, 2) GPIO_ACTIVE_LOW>;
+		};
+
+		bq28z610@55 {
+			compatible = "ti,bq28z610";
+			reg = <0x55>;
+			tz-name = "battery-temp";
+			alert-threshold = <0x0>;
+			one-percent-alerts = <0x1>;
+			valert-max = <0x13ec>;
+			valert-min = <0x0>;
+			vreset-threshold = <0x960>;
+			vreset-disable = <0x1>;
+			hib-threshold = <0x30>;
+			hib-active-threshold = <0x80>;
+			bits = <0x12>;
+			rcomp = <0x39>;
+			rcomp-seg = <0x200>;
+			soccheck-a = <0x77>;
+			soccheck-b = <0x79>;
+			ocvtest = <0xda90>;
+			data-tbl = <0x98 0x80 0xb3 0x50 0xb7 0x90 0xb9 0x0 0xba 0x70 0xbc 0x10 0xbc 0x50 0xbc 0xa0 0xbd 0x20 0xbe 0x30 0xbf 0x40 0xc2 0xf0 0xc4 0x20 0xc7 0xe0 0xcb 0xf0 0xd0 0x90 0x0 0x40 0x6 0x70 0xe 0x50 0x12 0x0 0x18 0xd0 0x33 0x10 0x31 0x40 0x35 0xd0 0x18 0xd0 0x19 0x0 0xb 0xf0 0xc 0x10 0xd 0x10 0x7 0x90 0x8 0x0 0x8 0x0>;
+		};
+	};
+
+	i2c@7000c500 {
+		status = "okay";
+		clock-frequency = <400000>;
+	};
+
+	i2c@7000c700 {
+		status = "okay";
+		clock-frequency = <100000>;
+	};
+
+	i2c@7000d000 {
+		status = "okay";
+		clock-frequency = <400000>;
+		nvidia,bit-banging-xfer-after-shutdown;
+	};
+
+	i2c@7000d100 {
+		status = "okay";
+		clock-frequency = <400000>;
+	};
+
+	spi@7000d400 {
+		status = "okay";
+		spi-max-frequency = <25000000>;
+	};
+
+	spi@7000d800 {
+		status = "okay";
+		spi-max-frequency = <25000000>;
+	};
+
+	spi@7000da00 {
+		status = "okay";
+		spi-max-frequency = <25000000>;
+	};
+
+	stm8t143 {
+		compatible = "stm,stm8t143";
+		pout-gpio = <&gpio 190 0>;
+		tout-gpio = <&gpio 112 0>;
+	};
+
+	pmc {
+		status = "okay";
+		nvidia,invert-interrupt;
+		nvidia,suspend-mode = <0x0>;
+		nvidia,cpu-pwr-good-time = <0x1f4>;
+		nvidia,cpu-pwr-off-time = <0x12c>;
+		nvidia,core-pwr-good-time = <0xf05 0xf05>;
+		nvidia,core-pwr-off-time = <0x7d0>;
+		nvidia,core-power-req-active-high;
+		nvidia,sys-clock-req-active-high;
+	};
+
+	sysedp_batmon_calc {
+		compatible = "nvidia,tegra124-sysedp_batmon_calc";
+		ocv_lut = <
+			100 8372010
+			95 8163880
+			90 8069280
+			85 7970700
+			80 7894100
+			75 7820860
+			70 7751890
+			65 7691770
+			60 7641110
+			55 7598990
+			50 7564200
+			45 7534290
+			40 7511410
+			35 7491870
+			30 7468380
+			25 7435720
+			20 7388720
+			15 7338370
+			10 7219650
+			0 5999850
+		>;
+		ibat_lut = <
+			600 9750
+			(-300) 9750
+			0 0
+		>;
+		rbat_data = <
+			100000 120000 140000 170000 190000 210000
+			100000 120000 150000 170000 190000 210000
+			100000 130000 150000 170000 200000 210000
+			110000 130000 160000 170000 200000 210000
+			120000 140000 170000 180000 210000 220000
+		>;
+		temp_axis = <450 230 100 50 0 (-200)>;
+		capacity_axis = <100 55 50 10 0>;
+		power_supply = "battery";
+		r_const = <70000>;
+		vsys_min = <5880000>;
+	};
+
+	xusb@70090000 {
+		/* nvidia,uses_external_pmic;
+		nvidia,gpio_controls_muxed_ss_lanes; */
+		nvidia,gpio_ss1_sata = <0x0>;
+		nvidia,portmap = <0x703>; /* SSP0, SSP1 USB2P0, USB2P1, USBP2 */
+		nvidia,ss_portmap = <0x10>;
+		nvidia,lane_owner = <0x6>; /* USB3P0 USB3P1 */
+		nvidia,ulpicap = <0x0>; /* No ulpi support. can we remove */
+		nvidia,supply_utmi_vbuses = "usb_vbus0", "usb_vbus1", "usb_vbus2";
+		nvidia,supply_s3p3v = "hvdd_usb";
+		nvidia,supply_s1p8v = "avdd_pll_utmip";
+		nvidia,supply_vddio_hsic = "vddio_hsic";
+		nvidia,supply_s1p05v = "avddio_usb";
+		/* hsic config values in order defined in structure */
+		nvidia,hsic0 = /bits/8 <0x1 0x1 0x8 0xa 0 0 1 0x22 0>;
+		status = "okay";
+	};
+};

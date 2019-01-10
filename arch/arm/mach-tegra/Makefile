@@ -258,6 +258,19 @@ obj-${CONFIG_SYSEDP_FRAMEWORK}          += board-tn8-sysedp.o
 obj-${CONFIG_SYSEDP_FRAMEWORK}          += board-ardbeg-sysedp.o
 endif
 
+obj-${CONFIG_MACH_YELLOWSTONE}               += board-yellowstone.o
+obj-${CONFIG_MACH_YELLOWSTONE}               += board-yellowstone-sdhci.o
+obj-${CONFIG_MACH_YELLOWSTONE}               += board-yellowstone-sensors.o
+obj-${CONFIG_MACH_YELLOWSTONE}               += board-yellowstone-panel.o
+obj-${CONFIG_MACH_YELLOWSTONE}               += board-yellowstone-memory.o
+obj-${CONFIG_MACH_YELLOWSTONE}               += board-yellowstone-power.o
+obj-${CONFIG_MACH_YELLOWSTONE}              += board-yellowstone-pinmux.o
+obj-${CONFIG_MACH_YELLOWSTONE}		     += panel-j-wuxga-7.o
+ifeq ($(CONFIG_MACH_YELLOWSTONE),y)
+obj-${CONFIG_SYSEDP_FRAMEWORK}          += board-yellowstone-sysedp.o
+endif
+
+
 obj-${CONFIG_MACH_LOKI}               	+= board-loki.o
 obj-${CONFIG_MACH_LOKI}               	+= board-loki-sensors.o
 obj-${CONFIG_MACH_LOKI}               	+= board-loki-panel.o
